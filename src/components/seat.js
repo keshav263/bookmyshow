@@ -6,23 +6,23 @@ const Seat = ({ seat, addSeat, count, setSeats, seats }) => {
   const [isSelected, setIsSelected] = useState(false);
   return (
     <TouchableOpacity
-      key={seat._id}
+      key={seat}
       onPress={() => {
         if (!isSelected) {
           setIsSelected(true);
-          setSeats((x) => [...x, { _id: seat._id }]);
+          setSeats((x) => [...x, { _id: seat }]);
         } else {
           setIsSelected(false);
-          let x = seats.filter((s) => s._id !== seat._id);
+          let x = seats.filter((s) => s._id !== seat);
           setSeats(x);
         }
       }}
     >
       <MaterialCommunityIcons
         style={{ margin: 1 }}
-        key={seat._id}
+        key={seat}
         name={isSelected ? "seat" : "seat-outline"}
-        size={26}
+        size={22}
         color={isSelected ? "#10E329" : "#888"}
       />
     </TouchableOpacity>

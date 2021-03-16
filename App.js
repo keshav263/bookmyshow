@@ -1,201 +1,55 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import {
-  Button,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import Seat from "./src/components/seat";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AppRegistry } from "react-native";
+import { name as appName } from "./app.json";
+import { Provider as PaperProvider } from "react-native-paper";
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import { Provider } from "react-redux";
+import ReduxThunk from "redux-thunk";
+import AuthReducer from "./src/store/reducers/Auth";
+import AppLoading from "expo-app-loading";
+import * as Font from "expo-font";
+import MovieReducer from "./src/store/reducers/Movies";
+import ProfileReducer from "./src/store/reducers/Profile";
+import BookingsReducer from "./src/store/reducers/Bookings";
+import AppNavigator from "./src/navigator/AppNavigator";
+const rootReducer = combineReducers({
+  Auth: AuthReducer,
+  Movie: MovieReducer,
+  Profile: ProfileReducer,
+  Bookings: BookingsReducer,
+});
 
+const fetchFonts = () => {
+  return Font.loadAsync({
+    logo: require("./assets/fonts/Yellowtail-Regular.ttf"),
+    "Oswald-Regular": require("./assets/fonts/Oswald-Regular.ttf"),
+    "Oswald-Medium": require("./assets/fonts/Oswald-Medium.ttf"),
+    "Oswald-Light": require("./assets/fonts/Oswald-Light.ttf"),
+  });
+};
+
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 export default function App() {
-  const [count, setCount] = useState(0);
-  const [seats, setSeats] = useState([]);
+  const [fontLoaded, setFontLoaded] = useState(false);
 
-  const getSilverSeats = () => {
-    let allSeats = [];
-    for (let i = 1; i <= 136; i++) {
-      allSeats.push({ _id: `s${i}` });
-    }
-    return allSeats.map((seat) => {
-      return (
-        <Seat seat={seat} count={count} setSeats={setSeats} seats={seats} />
-      );
-    });
-  };
-
-  const getPlatinumSeats = () => {
-    let allSeats = [];
-    for (let i = 1; i <= 68; i++) {
-      allSeats.push({ _id: `p${i}` });
-    }
-    return allSeats.map((seat) => {
-      return (
-        <Seat seat={seat} count={count} setSeats={setSeats} seats={seats} />
-      );
-    });
-  };
-
-  const getReclinerSeats = () => {
-    let allSeats = [];
-    for (let i = 1; i <= 28; i++) {
-      allSeats.push({ _id: `r${i}` });
-    }
-    return allSeats.map((seat) => {
-      return (
-        <Seat seat={seat} count={count} setSeats={setSeats} seats={seats} />
-      );
-    });
-  };
-
-  console.log(seats);
+  if (!fontLoaded) {
+    return (
+      <AppLoading
+        startAsync={fetchFonts}
+        onError={console.warn}
+        onFinish={() => {
+          setFontLoaded(true);
+        }}
+      />
+    );
+  }
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ height: 840 }}>
-        <ScrollView
-          horizontal={true}
-          centerContent={true}
-          contentContainerStyle={{
-            flexDirection: "column",
-            margin: 50,
-            width: 700,
-            borderWidth: 5,
-            height: 800,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              borderBottomWidth: StyleSheet.hairlineWidth,
-              color: "#888",
-              marginLeft: 5,
-            }}
-          >
-            Rs. 290 RECLINER
-          </Text>
-          <View style={{ width: 600, alignItems: "center", marginTop: 10 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                width: 400,
-                alignItems: "center",
-                // borderWidth: 5,
-                alignSelf: "center",
-              }}
-            >
-              {getReclinerSeats()}
-            </View>
-          </View>
-          <View style={{ height: 50 }} />
-
-          <Text
-            style={{
-              fontSize: 16,
-              borderBottomWidth: StyleSheet.hairlineWidth,
-              color: "#888",
-              marginLeft: 5,
-            }}
-          >
-            Rs. 150 PLATINUM
-          </Text>
-          <View style={{ width: 600, alignItems: "center", marginTop: 10 }}>
-            <View
-              style={{ flexDirection: "row", flexWrap: "wrap", width: 500 }}
-            >
-              {getPlatinumSeats()}
-            </View>
-          </View>
-          <View style={{ height: 50 }} />
-
-          <Text
-            style={{
-              fontSize: 16,
-              color: "#888",
-              borderBottomWidth: StyleSheet.hairlineWidth,
-              marginLeft: 5,
-            }}
-          >
-            Rs. 90 SILVER
-          </Text>
-          <View style={{ width: 600, alignItems: "center", marginTop: 10 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                width: 500,
-                flexWrap: "wrap",
-              }}
-            >
-              {getSilverSeats()}
-            </View>
-          </View>
-          <View style={{ width: 600, alignItems: "center", marginTop: 10 }}>
-            <Image
-              source={require("./assets/screen.png")}
-              resizeMode="contain"
-              style={{
-                width: 400,
-                height: 100,
-              }}
-            />
-            <Text>All eyes this way!</Text>
-          </View>
-        </ScrollView>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-            position: "absolute",
-            bottom: 0,
-            width: "100%",
-            backgroundColor: "#f3f5f7",
-            padding: 10,
-          }}
-        >
-          <View style={{ alignItems: "center", flexDirection: "row" }}>
-            <MaterialCommunityIcons
-              style={{ margin: 3 }}
-              name={"seat-outline"}
-              size={24}
-              color={"#888"}
-            />
-            <Text>Available</Text>
-          </View>
-          <View style={{ alignItems: "center", flexDirection: "row" }}>
-            <MaterialCommunityIcons
-              style={{ margin: 3 }}
-              name={"seat"}
-              size={24}
-              color={"black"}
-            />
-            <Text>Selected</Text>
-          </View>
-          <View style={{ alignItems: "center", flexDirection: "row" }}>
-            <MaterialCommunityIcons
-              style={{ margin: 3 }}
-              name={"seat"}
-              size={24}
-              color={"#10E329"}
-            />
-            <Text>Selected</Text>
-          </View>
-        </View>
-      </ScrollView>
-    </View>
+    <Provider store={store}>
+      <PaperProvider>
+        <AppNavigator />
+      </PaperProvider>
+    </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-
-    backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
-  },
-});
+AppRegistry.registerComponent(appName, () => Main);
