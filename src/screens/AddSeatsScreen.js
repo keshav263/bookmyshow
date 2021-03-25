@@ -6,311 +6,175 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions
 } from "react-native";
 import Seat from "../components/seat";
 import { Button } from "react-native-paper";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, } from "react-redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import fonts from "../constants/fonts";
 import * as bookingActions from "../store/actions/Bookings";
+import Svg,{Ellipse} from "react-native-svg"
+const SCREEN_WIDTH=Dimensions.get("window").width
 
 export default function AddSeatsScreen({ route, navigation }) {
   const [count, setCount] = useState(0);
-  const [seats, setSeats] = useState([]);
   const [price, setPrice] = useState(0);
   const [isLoading, setisLoading] = useState(false);
-  const { movie_id, time } = route.params;
+  const { movie_id, time,tryingToBookSeats } = route.params;
+  const totalBookedSeats=useSelector(state=>state.Bookings.bookedSeats)
+  const [seats, setSeats] = useState(tryingToBookSeats?tryingToBookSeats:[]);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.Auth.token);
+
+  let bookedSeats=totalBookedSeats.filter((details)=>{
+    if(details.movie_id === movie_id && details.time === time){
+      return true
+    }else{
+      return false
+    }
+  })
+
+bookedSeats=JSON.parse(bookedSeats[0].seats)
+  
+
+
+  useEffect(()=>{
+    navigation.setOptions({title:"Select Seats"})
+  },[navigation])
 
   useEffect(() => {
     let newPrice = 0;
     seats.map((seat) => {
-      if (seat._id[0] === "L" || seat._id[0] === "K") {
-        newPrice += 200;
-      } else if (
-        seat._id === "G" ||
-        seat._id[0] === "H" ||
-        seat._id[0] === "I" ||
-        seat._id[0] === "J"
-      ) {
-        newPrice += 150;
-      } else {
-        newPrice += 90;
-      }
+      newPrice+=28
     });
     setPrice(newPrice);
   });
 
-  const getSilverSeats = () => {
-    let allSeats = [];
-    let letter = "F";
 
-    for (let i = 0; i < 6; i++) {
-      // console.log(letter);
-      for (let j = 1; j <= 20; j++) {
-        allSeats.push({ _id: `${letter}${j}` });
+  const getSeats=()=>{
+    let allSeats=[]
+    let letter="A"
+
+    for (let i = 1; i <= 8; i++) {
+      if(i === 1 || i === 8){
+        for (let j = 1; j <= 6; j++) {
+         allSeats.push({_id:`${letter}${j}`}) 
+        }
+        letter = String.fromCharCode(letter.charCodeAt(0) + 1);
+      }else{
+        for (let j = 1; j <= 8; j++) {
+          allSeats.push({_id:`${letter}${j}`}) 
+         }
+         letter = String.fromCharCode(letter.charCodeAt(0) + 1);
       }
-      letter = String.fromCharCode(letter.charCodeAt(0) - 1);
+      
     }
-    return allSeats.map((seat) => {
-      return (
-        <Seat
-          key={seat._id}
-          seat={seat._id}
-          count={count}
-          setSeats={setSeats}
-          seats={seats}
-        />
-      );
-    });
-  };
 
-  const getPlatinumSeats = () => {
-    let allSeats = [];
+   return <View style={{marginTop:70}} > 
+    {getASeats(allSeats)}
+    {getBToGSeats(allSeats)}
+    {getHSeats(allSeats)}
+ </View>
+  }
 
-    let letter = "J";
+  const getASeats=(allSeats)=>{
+    return <View style={{width:"98%",flexDirection:"row",justifyContent:"center",alignItems:"center"}} >
+      {allSeats.map(seat=>{
+        if(seat._id[0]==="A"){
+          if(seat._id=== "A1"){
+            return <View style={{marginLeft:10}} ><Seat seat_id={seat._id} seats={seats} setSeats={setSeats} bookedSeats={bookedSeats}/></View>
+          }else if(seat._id==="A3"){
+            return <View style={{marginRight:30}} ><Seat seat_id={seat._id} seats={seats} setSeats={setSeats} bookedSeats={bookedSeats}/></View>
+          }else{
+            return <View ><Seat seat_id={seat._id} seats={seats} setSeats={setSeats} bookedSeats={bookedSeats}/></View>
+         
+          }
+        }
+      })}
+    </View>
+  }
 
-    for (let i = 0; i < 4; i++) {
-      // console.log(letter);
-      for (let j = 1; j <= 20; j++) {
-        allSeats.push({ _id: `${letter}${j}` });
-      }
-      letter = String.fromCharCode(letter.charCodeAt(0) - 1);
-    }
-    return allSeats.map((seat) => {
-      return (
-        <Seat
-          key={seat._id}
-          seat={seat._id}
-          count={count}
-          setSeats={setSeats}
-          seats={seats}
-        />
-      );
-    });
-  };
+  const getBToGSeats=(allSeats)=>{
+    return <View style={{width:"100%",flexDirection:'row',flexWrap:"wrap",alignItems:"center",justifyContent:"center"}} >
+      {allSeats.map(seat=>{
+        if(seat._id[0]!=="A" && seat._id[0]!=="H")
+        if(seat._id[1]==="4"){
+          return <View style={{marginRight:30}} ><Seat seat_id={seat._id} seats={seats} setSeats={setSeats} bookedSeats={bookedSeats}/></View>
+       
+        }else{
+          return    <View ><Seat seat_id={seat._id} seats={seats} setSeats={setSeats} bookedSeats={bookedSeats} /></View>
+       
+        }
+      })}
+    </View>
+  }
 
-  const getReclinerSeats = () => {
-    let allSeats = [];
-    let letter = "L";
-
-    for (let i = 0; i < 2; i++) {
-      // console.log(letter);
-      for (let j = 1; j <= 16; j++) {
-        allSeats.push({ _id: `${letter}${j}` });
-      }
-      letter = String.fromCharCode(letter.charCodeAt(0) - 1);
-    }
-    return allSeats.map((seat) => {
-      return (
-        <Seat
-          key={seat._id}
-          seat={seat._id}
-          count={count}
-          setSeats={setSeats}
-          seats={seats}
-        />
-      );
-    });
-  };
+  const getHSeats=(allSeats)=>{
+    return <View style={{width:"98%",flexDirection:"row",justifyContent:"center",alignItems:"center"}} >
+      {allSeats.map(seat=>{
+        if(seat._id[0]==="H"){
+          if(seat._id=== "H1"){
+            return <View style={{marginLeft:10}} ><Seat seat_id={seat._id} seats={seats} setSeats={setSeats} bookedSeats={bookedSeats}/></View>
+          }else if(seat._id==="H3"){
+            return <View style={{marginRight:30}} ><Seat seat_id={seat._id} seats={seats} setSeats={setSeats} bookedSeats={bookedSeats}/></View>
+          }else{
+            return <View ><Seat seat_id={seat._id} seats={seats} setSeats={setSeats} bookedSeats={bookedSeats}/></View>
+         
+          }
+        }
+      })}
+    </View>
+  }
 
   console.log(seats);
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ height: 700 }}>
-        <Text
-          style={{
-            color: "black",
-            fontFamily: fonts.Bold,
-            fontSize: 25,
-            margin: 10,
-          }}
-        >
-          Time:{time}hrs
-        </Text>
-        <ScrollView
-          horizontal={true}
-          centerContent={true}
-          contentContainerStyle={{
-            flexDirection: "column",
-
-            width: 720,
-            borderWidth: 5,
-            height: 800,
-          }}
-        >
-          <View
-            style={{
-              position: "absolute",
-              backgroundColor: "#888",
-              borderRadius: 20,
-              marginTop: 35,
-            }}
-          >
-            <Text style={styles.seatLetterSize}>L</Text>
-            <Text style={styles.seatLetterSize}>K</Text>
-            <Text style={[{ marginTop: 60 }, styles.seatLetterSize]}>J</Text>
-            <Text style={styles.seatLetterSize}>I</Text>
-            <Text style={styles.seatLetterSize}>H</Text>
-            <Text style={styles.seatLetterSize}>G</Text>
-            <Text style={[{ marginTop: 50 }, styles.seatLetterSize]}>F</Text>
-            {/* <Text style={styles.seatLetterSize}>G</Text> */}
-            {/* <Text style={styles.seatLetterSize}>F</Text> */}
-            <Text style={styles.seatLetterSize}>E</Text>
-            <Text style={styles.seatLetterSize}>D</Text>
-            <Text style={styles.seatLetterSize}>C</Text>
-            <Text style={styles.seatLetterSize}>B</Text>
-            <Text style={styles.seatLetterSize}>A</Text>
-          </View>
-          <View
-            style={{
-              position: "absolute",
-              backgroundColor: "#888",
-              borderRadius: 20,
-              marginTop: 35,
-              right: 0,
-            }}
-          >
-            <Text style={styles.seatLetterSize}>L</Text>
-            <Text style={styles.seatLetterSize}>K</Text>
-            <Text style={[{ marginTop: 60 }, styles.seatLetterSize]}>J</Text>
-            <Text style={styles.seatLetterSize}>I</Text>
-            <Text style={styles.seatLetterSize}>H</Text>
-            <Text style={styles.seatLetterSize}>G</Text>
-            <Text style={[{ marginTop: 50 }, styles.seatLetterSize]}>F</Text>
-            {/* <Text style={styles.seatLetterSize}>G</Text> */}
-            {/* <Text style={styles.seatLetterSize}>F</Text> */}
-            <Text style={styles.seatLetterSize}>E</Text>
-            <Text style={styles.seatLetterSize}>D</Text>
-            <Text style={styles.seatLetterSize}>C</Text>
-            <Text style={styles.seatLetterSize}>B</Text>
-            <Text style={styles.seatLetterSize}>A</Text>
-          </View>
-          <View style={{ marginHorizontal: 50, marginVertical: 10 }}>
-            <Text style={styles.class}>Rs. 290 RECLINER</Text>
-            <View style={{ width: 600, alignItems: "center", marginTop: 10 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  width: 400,
-                  alignItems: "center",
-                  // borderWidth: 5,
-                  alignSelf: "center",
-                }}
-              >
-                {getReclinerSeats()}
-              </View>
-            </View>
-            <View style={{ height: 50 }} />
-
-            <Text style={styles.class}>Rs. 150 PLATINUM</Text>
-            <View style={{ width: 600, alignItems: "center", marginTop: 10 }}>
-              <View
-                style={{ flexDirection: "row", flexWrap: "wrap", width: 500 }}
-              >
-                {getPlatinumSeats()}
-              </View>
-            </View>
-            <View style={{ height: 50 }} />
-
-            <Text style={styles.class}>Rs. 90 SILVER</Text>
-            <View style={{ width: 600, alignItems: "center", marginTop: 10 }}>
-              <View
-                style={{ flexDirection: "row", flexWrap: "wrap", width: 500 }}
-              >
-                {getSilverSeats()}
-              </View>
-            </View>
-            <View style={{ width: 600, alignItems: "center" }}>
-              <Image
-                source={require("../../assets/screen.png")}
-                resizeMode="contain"
-                style={{
-                  width: 400,
-                  height: 80,
-                }}
-              />
-              <Text style={{ position: "relative", top: -15 }}>
-                All eyes this way!
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
-        {seats.length > 0 && (
-          <View
-            style={{
-              position: "absolute",
-              bottom: 40,
-
-              width: "100%",
-              backgroundColor: "#f3f5f7",
-            }}
-          >
-            <Button
-              mode="contained"
-              color="red"
-              style={{ margin: 15 }}
-              loading={isLoading}
-              disabled={isLoading}
-              onPress={async () => {
-                setisLoading(true);
-                let arrayOfSeats = seats.map((seat) => {
-                  return seat._id;
-                });
-                await dispatch(
-                  bookingActions.bookSeats(arrayOfSeats, time, movie_id, token)
-                );
-                setisLoading(false);
-                navigation.navigate("Confirm");
-              }}
-            >
-              Pay Rs.{price}
-            </Button>
-          </View>
-        )}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-            position: "absolute",
-            bottom: 0,
-            width: "100%",
-            backgroundColor: "#f3f5f7",
-            padding: 10,
-          }}
-        >
-          <View style={{ alignItems: "center", flexDirection: "row" }}>
-            <MaterialCommunityIcons
-              style={{ margin: 3 }}
-              name={"seat-outline"}
-              size={24}
-              color={"#888"}
-            />
-            <Text>Available</Text>
-          </View>
-          <View style={{ alignItems: "center", flexDirection: "row" }}>
-            <MaterialCommunityIcons
-              style={{ margin: 3 }}
-              name={"seat"}
-              size={24}
-              color={"black"}
-            />
-            <Text>Unavailable</Text>
-          </View>
-          <View style={{ alignItems: "center", flexDirection: "row" }}>
-            <MaterialCommunityIcons
-              style={{ margin: 3 }}
-              name={"seat"}
-              size={24}
-              color={"#10E329"}
-            />
-            <Text>Selected</Text>
-          </View>
+      <View style={{alignSelf:"flex-end",margin:20,position:"absolute",right:20}} >
+        <Text style={{color:"#fff",fontWeight:"bold",fontSize:25}} >{time} hr</Text>
+      </View>
+      <Svg height="100" width="400" style={{alignItems:"center",marginTop:20}} >
+      <Ellipse
+    
+      cx="200"
+      cy="120"
+      rx="200"
+      ry="50"
+      stroke="#888"
+      strokeWidth="4"
+      fill="transparent"
+      />
+      </Svg>
+      {getSeats()}
+      <View style={{flexDirection:"row",justifyContent:"space-around",marginVertical:25,width:"100%"}} >
+        <View style={styles.labelStyle} >
+        <MaterialCommunityIcons name="checkbox-blank-outline" size={24} color="#536EE4" />
+        <Text style={styles.whiteColor} >Available</Text>
         </View>
-      </ScrollView>
+        <View style={styles.labelStyle} >
+        <MaterialCommunityIcons name="checkbox-blank" size={24} color="#536EE4" />
+        <Text style={styles.whiteColor} >Selected</Text>
+        </View>
+        <View style={styles.labelStyle} >
+        <MaterialCommunityIcons name="checkbox-blank" size={24} color="#454B6B" />
+        <Text style={styles.whiteColor} >Reserved</Text>
+        </View>
+      </View>
+      <View style={{alignSelf:"flex-start",margin:15}} > 
+        <Text style={{color:"#fff",fontSize:20}} ><Text style={{fontWeight:"bold"}} >Date:</Text> April 6,Thursday</Text>
+      </View>
+      <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-around",marginHorizontal:15,width:"100%"}} >
+        <View style={{alignItems:"center"}} >
+          <Text style={styles.whiteColor} >{seats.length} Seats</Text>
+          <Text style={{color:"#A16834",fontSize:25,fontWeight:"bold"}} >$ {price}</Text>
+        </View>
+        <Button color="#536EE4" onPress={()=>{
+          navigation.navigate("Movie",{
+            seats:seats,
+            price:price
+          })
+        }} mode="contained" style={{width:"60%",overflow:"hidden",borderRadius:25}} contentStyle={{padding:15}} >Confirm</Button>
+      </View>
     </View>
   );
 }
@@ -319,20 +183,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
 
-    backgroundColor: "#fff",
-    // alignItems: "center",
+    backgroundColor: "#070E2D",
+    alignItems: "center",
     // justifyContent: "center",
   },
-  seatLetterSize: {
-    fontSize: 20,
-    color: "white",
-    paddingHorizontal: 5,
-    fontFamily: fonts.Light,
+  whiteColor:{
+    color:"#fff",
+    marginLeft:10
   },
-  class: {
-    fontSize: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    color: "#888",
-    marginLeft: 5,
-  },
+  labelStyle:{
+    flexDirection:"row",
+    alignItems:"center",
+    justifyContent:"center"
+  }
 });

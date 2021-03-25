@@ -40,7 +40,7 @@ const FlowNavigator = () => {
           let tabBarVisible;
           const routeName = getFocusedRouteNameFromRoute(route);
 
-          if (routeName === "Movie" || routeName === "AddSeats") {
+          if (routeName === "Movie" || routeName === "AddSeats" || routeName==="Checkout" || routeName==="Confirm") {
             tabBarVisible = false;
           } else {
             tabBarVisible = true;

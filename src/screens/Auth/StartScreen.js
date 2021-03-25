@@ -63,14 +63,13 @@ const StartScreen = ({ navigation }) => {
   }
 
   return (
-    // <ImageBackground
-    // resizeMode="cover"
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      {/* // source={require("../../../assets/AuthBackground.jpg")}
-      // > */}
+    <>
+    <Image resizeMode="cover"  source={require("../../../assets/4015559.jpg")} style={{width:"100%",height:"100%",opacity:.3,position:"absolute"}} />
+    <View style={styles.overlay} />
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center"}}>
 
       <View style={styles.container}>
-        <View style={{ height: "15%" }} />
+        <Image style={{width:80,height:80}}  source={require("../../../assets/logo.png")}/>
         <View style={{ alignItems: "center" }}>
           <Text style={{ fontSize: 50, marginBottom: 15, fontFamily: "logo" }}>
             bookmyshow
@@ -159,9 +158,10 @@ const StartScreen = ({ navigation }) => {
           </Text>
         </View>
       </View>
-      {/* </ImageBackground>
-       */}
+      
     </View>
+    </>
+     
   );
 };
 
@@ -170,7 +170,8 @@ const styles = StyleSheet.create({
     height: "70%",
     width: "90%",
     borderRadius: 20,
-    justifyContent: "flex-end",
+    justifyContent: "center",
+    alignItems:"center",
     backgroundColor: "transparent",
   },
   oAuthComponentContainerStyle: {
@@ -179,6 +180,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
 
     alignItems: "center",
+  },
+  overlay:{
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor:"#888",
+    opacity:0.5
   },
   inputContainerStyle: {
     flexDirection: "row",
@@ -217,10 +223,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
-    height: SCREEN_HEIGHT / 13,
+    height: SCREEN_HEIGHT / 14,
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: Colors.primary,
+    borderColor:"black",
   },
   emailTextStyle: {
     fontSize: 18,

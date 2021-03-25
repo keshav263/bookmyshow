@@ -64,9 +64,12 @@ const OTPScreen = ({ navigation, route }) => {
         </TouchableOpacity>
         <Text style={{ fontSize: 16, fontWeight: "bold" }}>Enter the code</Text>
       </View>
-      <View style={{ margin: 40 }}>
+      <View style={{ margin: 40,marginTop:20 }}>
         <Text style={styles.title}>
-          We've sent a verification code to +91 | {phoneNumber}
+          We've sent a verification code to 
+        </Text>
+        <Text style={styles.title} >
+        +91 | {phoneNumber}
         </Text>
       </View>
 
@@ -109,10 +112,8 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: "center",
-    marginVertical: 15,
     fontSize: 16,
-    marginTop: 30,
-    marginHorizontal: 40,
+    width:"100%"
   },
   inputFieldStyle: {
     color: "black",
