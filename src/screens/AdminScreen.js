@@ -46,12 +46,12 @@ const AdminScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FAB
+      {/* <FAB
         style={styles.timing}
         small
         icon="pencil"
         onPress={() => navigation.navigate("AddTiming")}
-      />
+      /> */}
       <FAB
         style={styles.fab}
         small={false}

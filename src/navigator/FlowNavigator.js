@@ -88,12 +88,24 @@ const FlowNavigator = () => {
         <FlowTabNavigator.Screen
           name="Admin"
           component={AdminNavigator}
-          options={{
-            tabBarIcon: ({ color }) => (
+           options={({ route }) => {
+          let tabBarVisible;
+          const routeName = getFocusedRouteNameFromRoute(route);
+
+          if (routeName === "AddMovie" || routeName === "AddTiming") {
+            tabBarVisible = false;
+          } else {
+            tabBarVisible = true;
+          }
+
+          return {
+          tabBarVisible,
+           tabBarIcon: ({ color }) => (
               <AntDesign name="plus" size={30} color={color} />
             ),
-          }}
-        />
+          };
+        }}
+         />
       )}
     </FlowTabNavigator.Navigator>
   );
